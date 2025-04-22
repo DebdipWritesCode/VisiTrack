@@ -1,50 +1,35 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"database/sql"
 	"log"
-	"os"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v4"
-	"github.com/joho/godotenv"
+	"github.com/DebdipWritesCode/VisitorManagementSystem/api"
+	db "github.com/DebdipWritesCode/VisitorManagementSystem/db/sqlc"
+
+	"github.com/DebdipWritesCode/VisitorManagementSystem/util"
+	_ "github.com/lib/pq"
 )
 
 func main() {
-	// Load environment variables from .env file
-	err := godotenv.Load()
+	config, err := util.LoadConfig(".")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("cannot load config:", err)
 	}
 
-	// Retrieve the database credentials from environment variables
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	dbSSLMode := os.Getenv("DB_SSLMODE")
-
-	// Create the PostgreSQL connection string
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
-		dbUser, dbPassword, dbHost, dbPort, dbName, dbSSLMode)
-
-	// Connect to the database
-	conn, err := pgx.Connect(context.Background(), connStr)
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
-		log.Fatal("Unable to connect to database:", err)
+		log.Fatal("cannot connect to database:", err)
 	}
-	defer conn.Close(context.Background())
 
-	// Your application logic here...
+	store := db.NewStore(conn)
+	server, err := api.NewServer(config, store)
+	if err != nil {
+		log.Fatal("cannot create server:", err)
+	}
 
-	// Start the Gin server
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Hello, world!",
-		})
-	})
-	r.Run(":8080")
+	err = server.Start(config.ServerAddress)
+	if err != nil {
+		log.Fatal("cannot start server:", err)
+	}
 }
