@@ -1,0 +1,34 @@
+# Go binaries and build artifacts
+/bin/
+/obj/
+/build/
+*.exe
+*.test
+*.out
+*.log
+
+# Go modules
+/go.sum
+/go.mod
+
+# SQLC generated files (optional, if you want to ignore these)
+/db/sqlc/
+
+# Environment files
+.env
+
+# IDE/editor files
+.vscode/
+/.idea/
+/*.swp
+*.sublime-workspace
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# GoLand or other IDE specific
+/.idea/
+
+# .env files
+.env
