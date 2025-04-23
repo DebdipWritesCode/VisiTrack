@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	db "github.com/DebdipWritesCode/VisitorManagementSystem/db/sqlc"
 	"github.com/DebdipWritesCode/VisitorManagementSystem/util"
 	"github.com/gin-gonic/gin"
@@ -14,12 +16,19 @@ type Server struct {
 
 // NewServer creates a new HTTP server and sets up routing.
 func NewServer(config util.Config, store db.Store) (*Server, error) {
+	fmt.Println("Initializing Twilio client...")
+	util.InitTwilio()
+
 	server := &Server{
 		config: config,
 		store:  store,
 	}
 	server.setupRouter()
 	return server, nil
+}
+
+func (server *Server) GetRouter() *gin.Engine {
+	return server.router
 }
 
 // setupRouter initializes the Gin router with all routes.
@@ -42,6 +51,8 @@ func (server *Server) setupRouter() {
 
 	// User routes
 	router.POST("/users", server.createUser)
+	router.POST("/auth/signup", server.signupUser)
+	router.POST("/auth/login", server.loginUser)
 	router.GET("/users/:id", server.getUserByID)
 	router.GET("/users/phone/:phone_number", server.getUserByPhone)
 	router.GET("/users", server.listUsers)
@@ -63,11 +74,9 @@ func (server *Server) setupRouter() {
 	router.DELETE("/availability", server.deleteAvailabilitySlot)
 	router.DELETE("/availability/:user_id", server.deleteAvailabilityByUser)
 
-	// OTP routes
-	router.POST("/otp", server.createOTP)
-	router.GET("/otp/:phone_number", server.getOTPByPhone)
-	router.DELETE("/otp", server.deleteOTPByPhone)
-	router.DELETE("/otps/expired", server.deleteExpiredOTPs)
+	// OTP routes using Twilio
+	router.POST("/otp/send", server.sendOTP)
+	router.POST("/otp/verify", server.verifyOTP)
 
 	// Appointment Log routes
 	router.POST("/appointment_logs", server.createAppointmentLog)

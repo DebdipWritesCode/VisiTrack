@@ -1,15 +1,3 @@
-CREATE TYPE "Role" AS ENUM (
-  'admin',
-  'user'
-);
-
-CREATE TYPE "AppointmentStatus" AS ENUM (
-  'pending',
-  'ongoing',
-  'completed',
-  'cancelled'
-);
-
 CREATE TABLE "otps" (
   "phone_number" varchar(15),
   "otp_code" varchar(6),
@@ -22,7 +10,7 @@ CREATE TABLE "users" (
   "phone_number" varchar(15) UNIQUE NOT NULL,
   "first_name" varchar(50) NOT NULL,
   "last_name" varchar(50) NOT NULL,
-  "role" Role DEFAULT 'user',
+  "role" varchar(10) DEFAULT 'user' CHECK (role IN ('admin', 'user')),
   "created_at" timestamp DEFAULT (now())
 );
 
@@ -43,7 +31,7 @@ CREATE TABLE "appointments" (
   "appointment_date" date NOT NULL,
   "start_time" time NOT NULL,
   "end_time" time NOT NULL,
-  "status" AppointmentStatus DEFAULT 'pending',
+  "status" varchar(10) DEFAULT 'pending' CHECK (status IN ('pending', 'ongoing', 'completed', 'cancelled')),
   "qr_code" text,
   "created_at" timestamp DEFAULT (now()),
   FOREIGN KEY ("visitor_id") REFERENCES "users" ("id") ON DELETE CASCADE,

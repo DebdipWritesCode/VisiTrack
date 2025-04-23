@@ -1,11 +1,12 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { logoutUser } from "../utils/auth";
 
 const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("user_id");
+    logoutUser();
     navigate("/login");
   };
 
@@ -14,8 +15,8 @@ const Sidebar = () => {
 
   return (
     <div className="h-screen w-60 bg-blue-800 p-4 fixed top-0 left-0 shadow-lg">
-      <h2 className="text-white text-xl font-bold mb-8">QuickBook</h2>
-      <nav className="flex flex-col space-y-3">
+      <h2 className="text-white text-xl font-bold mb-8">IIITN Visitors</h2>
+      <nav className="flex flex-col space-y-3 text-xl gap-8">
         <NavLink to="/dashboard" className={linkClass}>Dashboard</NavLink>
         <NavLink to="/book" className={linkClass}>Book Appointment</NavLink>
         <NavLink to="/appointments" className={linkClass}>My Appointments</NavLink>
