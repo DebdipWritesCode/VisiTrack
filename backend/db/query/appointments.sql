@@ -2,7 +2,7 @@
 INSERT INTO appointments (
   visitor_id, host_id, appointment_date, start_time, end_time, status, qr_code
 ) VALUES (
-  $1, $2, $3, $4, $5, COALESCE($6, 'pending'), $7
+  $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING *;
 

@@ -2,7 +2,7 @@
 INSERT INTO users (
   phone_number, first_name, last_name, role
 ) VALUES (
-  $1, $2, $3, COALESCE($4, 'user')
+  $1, $2, $3, $4
 )
 RETURNING *;
 
@@ -34,4 +34,27 @@ RETURNING *;
 
 -- name: DeleteUser :exec
 DELETE FROM users
+WHERE id = $1;
+
+-- name: GetTopPopularUsers :many
+SELECT 
+  id, 
+  first_name, 
+  last_name, 
+  phone_number, 
+  appointments_hosted, 
+  appointments_visited,
+  (appointments_hosted + appointments_visited) AS total_appointments
+FROM users
+ORDER BY total_appointments DESC
+LIMIT 5;
+
+-- name: GetTotalAppointmentsHosted :one
+SELECT appointments_hosted
+FROM users
+WHERE id = $1;
+
+-- name: GetTotalAppointmentsVisited :one
+SELECT appointments_visited
+FROM users
 WHERE id = $1;

@@ -14,7 +14,7 @@ const Login = () => {
         phone_number: phoneNumber,
       });
       alert("Login successful!");
-      saveUserId(res.data.user_id); // optional
+      saveUserId(res.data.id); // optional
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);

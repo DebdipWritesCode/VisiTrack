@@ -60,17 +60,24 @@ func (server *Server) setupRouter() {
 	router.PUT("/users/role", server.updateUserRole)
 	router.DELETE("/users/:id", server.deleteUser)
 
+	// User appointment stats
+	router.GET("/users/:id/appointments/hosted", server.getTotalAppointmentsHosted)
+	router.GET("/users/:id/appointments/visited", server.getTotalAppointmentsVisited)
+	router.GET("/users/popular", server.getTopPopularUsers)
+
 	// Appointment Stats routes
 	router.POST("/appointment_stats", server.createAppointmentStats)
 	router.GET("/appointment_stats/:user_id", server.getAppointmentStatsByUserID)
 	router.PUT("/appointment_stats/increment", server.incrementAppointmentCount)
 	router.PUT("/appointment_stats/decrement", server.decrementAppointmentCount)
 	router.PUT("/appointment_stats/reset", server.resetAppointmentCount)
+	router.GET("/appointment_stats/popular", server.getTopPopularUsers)
 	router.DELETE("/appointment_stats/:user_id", server.deleteAppointmentStats)
 
 	// Availability routes
 	router.POST("/availability", server.createAvailabilitySlot)
 	router.GET("/availability/:user_id", server.getAvailabilityByUser)
+	router.PUT("/availability/status", server.updateAvailabilityStatus)
 	router.DELETE("/availability", server.deleteAvailabilitySlot)
 	router.DELETE("/availability/:user_id", server.deleteAvailabilityByUser)
 

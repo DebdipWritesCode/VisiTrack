@@ -3,7 +3,6 @@ package api
 import (
 	"database/sql"
 	"net/http"
-
 	"time"
 
 	db "github.com/DebdipWritesCode/VisitorManagementSystem/db/sqlc"
@@ -128,4 +127,38 @@ func (server *Server) deleteAvailabilityByUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "all availability slots deleted for user"})
+}
+
+// UpdateAvailabilityStatusRequest struct to bind request for updating availability status
+type updateAvailabilityStatusRequest struct {
+	UserID    int64  `json:"user_id" binding:"required,min=1"`
+	DayOfWeek int32  `json:"day_of_week" binding:"required"`
+	StartTime string `json:"start_time" binding:"required"`
+	EndTime   string `json:"end_time" binding:"required"`
+	Status    string `json:"status" binding:"required,oneof=available not_available"`
+}
+
+// Function to update availability status
+func (server *Server) updateAvailabilityStatus(ctx *gin.Context) {
+	var req updateAvailabilityStatusRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	arg := db.UpdateAvailabilityStatusParams{
+		UserID:    int32(req.UserID),
+		DayOfWeek: req.DayOfWeek,
+		StartTime: parseTime(req.StartTime),
+		EndTime:   parseTime(req.EndTime),
+		Status:    sql.NullString{String: req.Status, Valid: req.Status != ""},
+	}
+
+	err := server.store.UpdateAvailabilityStatus(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "availability status updated"})
 }

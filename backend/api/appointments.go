@@ -27,17 +27,17 @@ func (server *Server) createAppointment(ctx *gin.Context) {
 	}
 
 	arg := db.CreateAppointmentParams{
-		VisitorID:         int32(req.VisitorID),
-		HostID:            int32(req.HostID),
-		AppointmentDate:   req.AppointmentDate,
-		StartTime:         req.StartTime,
-		EndTime:           req.EndTime,
-		AppointmentStatus: sql.NullString{String: "pending", Valid: true},
-		QrCode:            sql.NullString{String: req.QRCode, Valid: true},
+		VisitorID:       int32(req.VisitorID),
+		HostID:          int32(req.HostID),
+		AppointmentDate: req.AppointmentDate,
+		StartTime:       req.StartTime,
+		EndTime:         req.EndTime,
+		Status:          sql.NullString{String: "pending", Valid: true},
+		QrCode:          sql.NullString{String: req.QRCode, Valid: true},
 	}
 
 	if req.Status != nil {
-		arg.AppointmentStatus = sql.NullString{String: *req.Status, Valid: true}
+		arg.Status = sql.NullString{String: *req.Status, Valid: true}
 	}
 
 	appointment, err := server.store.CreateAppointment(ctx, arg)
@@ -143,7 +143,7 @@ func (server *Server) updateAppointmentStatus(ctx *gin.Context) {
 
 	arg := db.UpdateAppointmentStatusParams{
 		ID:     int32(req.ID),
-		Status: req.Status,
+		Status: sql.NullString{String: req.Status, Valid: true},
 	}
 
 	appointment, err := server.store.UpdateAppointmentStatus(ctx, arg)
