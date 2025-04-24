@@ -44,10 +44,11 @@ SELECT
   phone_number, 
   appointments_hosted, 
   appointments_visited,
-  (appointments_hosted + appointments_visited) AS total_appointments
+  (appointments_hosted + appointments_visited) AS total_appointments,
+  role
 FROM users
 ORDER BY total_appointments DESC
-LIMIT 5;
+LIMIT 10;
 
 -- name: GetTotalAppointmentsHosted :one
 SELECT appointments_hosted

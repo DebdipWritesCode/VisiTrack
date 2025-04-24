@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from "react";
 import API from "../utils/api";
 import { getUserId } from "../utils/auth";
+import TimeSlotModal from "../components/TimeSlotModal";
+import ConfirmationDialog from "../components/ConfirmationDialog";
+import QRCodeModal from "../components/QRCodeModal";
 
 const BookAppointment = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [showTimeModal, setShowTimeModal] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [qrCodeValue, setQrCodeValue] = useState(null);
+  const [showQrModal, setShowQrModal] = useState(false);
 
   useEffect(() => {
     const fetchPopularUsers = async () => {
       try {
         const res = await API.get("/users/popular");
-        setUsers(res.data);
+
+        const filteredUsers = res.data.filter(
+          (user) => user.role.String !== "admin" && user.id !== parseInt(getUserId())
+        )
+
+        setUsers(filteredUsers);
       } catch (err) {
         console.error("Error fetching popular users:", err);
       }
@@ -29,9 +44,45 @@ const BookAppointment = () => {
       .includes(search.toLowerCase())
   );
 
-  const handleBookClick = (userId) => {
-    console.log("Book clicked for user:", userId);
-    // TODO: Show timeslot picker modal
+  const handleBookClick = async (userId) => {
+    try {
+      setSelectedUserId(userId);
+      const res = await API.get(`/availability/${userId}`);
+      setAvailableSlots(res.data); // assuming array of strings like ["09:00", "09:30"]
+      setShowTimeModal(true);
+    } catch (err) {
+      console.error("Failed to fetch availability:", err);
+    }
+  };
+
+  const handleSlotSelect = (slot) => {
+    setSelectedSlot(slot);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmBooking = async () => {
+    try {
+      const visitorId = getUserId();
+
+      const payload = {
+        visitor_id: parseInt(visitorId),
+        host_id: selectedUserId,
+        appointment_date: selectedSlot.date,
+        start_time: selectedSlot.start_time,
+        end_time: selectedSlot.end_time,
+        qr_code: `appointment-${Date.now()}`
+      };
+
+      const res = await API.post("/appointments", payload);
+
+      setQrCodeValue(res.data.qr_code.String); // If backend sends it
+      setShowConfirmDialog(false);
+      setShowQrModal(true); // Show QR modal
+      setSelectedUserId(null);
+      setSelectedSlot(null);
+    } catch (err) {
+      console.error("Booking failed:", err);
+    }
   };
 
   return (
@@ -67,6 +118,25 @@ const BookAppointment = () => {
           </div>
         ))}
       </div>
+
+      <TimeSlotModal
+        isOpen={showTimeModal}
+        onClose={() => setShowTimeModal(false)}
+        timeSlots={availableSlots}
+        onSelect={handleSlotSelect}
+      />
+
+      <ConfirmationDialog
+        isOpen={showConfirmDialog}
+        onConfirm={handleConfirmBooking}
+        onCancel={() => setShowConfirmDialog(false)}
+      />
+
+      <QRCodeModal
+        isOpen={showQrModal}
+        onClose={() => setShowQrModal(false)}
+        value={qrCodeValue}
+      />
     </div>
   );
 };

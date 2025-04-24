@@ -13,9 +13,17 @@ const Login = () => {
       const res = await API.post("/auth/login", {
         phone_number: phoneNumber,
       });
+
+      console.log("Login response:", res.data);
+  
       alert("Login successful!");
-      saveUserId(res.data.id); // optional
-      navigate("/dashboard");
+      saveUserId(res.data.id);
+  
+      if (res.data.role.String === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error("Login error:", error);
       alert(error.response?.data?.error || "Login failed");

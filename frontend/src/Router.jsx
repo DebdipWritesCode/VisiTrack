@@ -12,6 +12,7 @@ import QRPage from "./pages/QRPage";
 
 import Layout from "./components/Layout";
 import { getUserId } from "./utils/auth";
+import AdminPage from "./pages/AdminPage";
 
 const AppRouter = () => {
   const userId = getUserId();
@@ -21,6 +22,7 @@ const AppRouter = () => {
       <Route path="/" element={userId ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/admin" element={<AdminPage />} />
 
       <Route element={<Layout />}>
         <Route path="/dashboard" element={<Dashboard />} />

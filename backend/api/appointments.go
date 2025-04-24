@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -110,17 +111,28 @@ func (server *Server) listAppointmentsByHost(ctx *gin.Context) {
 }
 
 type listByDateRequest struct {
-	Date time.Time `form:"date" binding:"required"`
+	Date string `form:"date" binding:"required"`
 }
 
+// List appointments by date
 func (server *Server) listAppointmentsByDate(ctx *gin.Context) {
 	var req listByDateRequest
+	// Bind the query parameter as date
 	if err := ctx.ShouldBindQuery(&req); err != nil {
+		// If there's an error, respond with BadRequest
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	appointments, err := server.store.ListAppointmentsByDate(ctx, req.Date)
+	// Parse the date string to time.Time
+	parsedDate, err := time.Parse("2006-01-02", req.Date)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(fmt.Errorf("invalid date format, use YYYY-MM-DD")))
+		return
+	}
+
+	// Use the parsed time.Time object for the database query
+	appointments, err := server.store.ListAppointmentsByDate(ctx, parsedDate)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -129,9 +141,33 @@ func (server *Server) listAppointmentsByDate(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, appointments)
 }
 
+type getAppointmentByQRCodeRequest struct {
+	QRCode string `uri:"qr_code" binding:"required"`
+}
+
+func (server *Server) getAppointmentByQRCode(ctx *gin.Context) {
+	var req getAppointmentByQRCodeRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	appointment, err := server.store.GetAppointmentByQRCode(ctx, sql.NullString{String: req.QRCode, Valid: true})
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(fmt.Errorf("no appointment found for this QR code")))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, appointment)
+}
+
 type updateAppointmentStatusRequest struct {
 	ID     int64  `json:"id" binding:"required,min=1"`
-	Status string `json:"status" binding:"required,oneof=pending confirmed cancelled completed"`
+	Status string `json:"status" binding:"required,oneof=pending ongoing cancelled completed"`
 }
 
 func (server *Server) updateAppointmentStatus(ctx *gin.Context) {
@@ -149,7 +185,7 @@ func (server *Server) updateAppointmentStatus(ctx *gin.Context) {
 	appointment, err := server.store.UpdateAppointmentStatus(ctx, arg)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.JSON(http.StatusNotFound, errorResponse(fmt.Errorf("no appointment found with this ID")))
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))

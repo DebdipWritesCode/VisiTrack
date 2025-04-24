@@ -45,6 +45,7 @@ func (server *Server) setupRouter() {
 	router.GET("/appointments/visitor/:id", server.listAppointmentsByVisitor)
 	router.GET("/appointments/host/:id", server.listAppointmentsByHost)
 	router.GET("/appointments/date", server.listAppointmentsByDate)
+	router.GET("/appointments/qr/:qr_code", server.getAppointmentByQRCode)
 	router.PUT("/appointments/status", server.updateAppointmentStatus)
 	router.DELETE("/appointments/:id", server.deleteAppointment)
 	router.POST("/appointments/:id/cancel", server.cancelAppointment)
