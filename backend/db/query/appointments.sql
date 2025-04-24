@@ -65,6 +65,16 @@ JOIN users visitor ON a.visitor_id = visitor.id
 WHERE a.qr_code = $1
 LIMIT 1;
 
+-- name: GetUserAppointmentStats :one
+SELECT 
+  u.appointments_hosted,
+  u.appointments_visited,
+  COUNT(a.id) AS pending_appointments
+FROM users u
+LEFT JOIN appointments a ON u.id = a.host_id AND a.status = 'pending'
+WHERE u.id = $1
+GROUP BY u.appointments_hosted, u.appointments_visited;
+
 -- name: UpdateAppointmentStatus :one
 UPDATE appointments
 SET status = $2

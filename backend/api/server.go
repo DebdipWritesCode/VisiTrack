@@ -47,6 +47,7 @@ func (server *Server) setupRouter() {
 	router.GET("/appointments/date", server.listAppointmentsByDate)
 	router.GET("/appointments/qr/:qr_code", server.getAppointmentByQRCode)
 	router.PUT("/appointments/status", server.updateAppointmentStatus)
+	router.GET("/users/:id/stats", server.getUserAppointmentStats)
 	router.DELETE("/appointments/:id", server.deleteAppointment)
 	router.POST("/appointments/:id/cancel", server.cancelAppointment)
 
@@ -60,6 +61,7 @@ func (server *Server) setupRouter() {
 	router.PUT("/users/name", server.updateUserName)
 	router.PUT("/users/role", server.updateUserRole)
 	router.DELETE("/users/:id", server.deleteUser)
+	router.GET("/users/search", server.getUsersByName)
 
 	// User appointment stats
 	router.GET("/users/:id/appointments/hosted", server.getTotalAppointmentsHosted)

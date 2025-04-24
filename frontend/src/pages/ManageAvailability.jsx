@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import API from '../utils/api';
 import { getUserId } from '../utils/auth';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const hours = Array.from({ length: 9 }, (_, i) => 9 + i); // 9 to 17
 
-const formatTime = (h) => `${String(h).padStart(2, '0')}:${String(0).padStart(2, '0')}`; 
+const formatTime = (h) => `${String(h).padStart(2, '0')}:${String(0).padStart(2, '0')}`;
 const getSlotKey = (day, hour) => `${day}-${hour}`;
 
 const ManageAvailability = () => {
@@ -22,7 +24,7 @@ const ManageAvailability = () => {
     API.get(`/availability/${userId}`)
       .then(res => {
         const availMap = {};
-        const statusMap = {}; 
+        const statusMap = {};
         res.data.forEach(slot => {
           const day = slot.day_of_week;
           const hour = new Date(slot.start_time).getUTCHours();
@@ -68,14 +70,14 @@ const ManageAvailability = () => {
         const slotStatus = status[key] || 'available';
 
         if (was !== now) {
-          const startTime = formatTime(hour); 
-          const endTime = formatTime(hour + 1);        
+          const startTime = formatTime(hour);
+          const endTime = formatTime(hour + 1);
 
           const requestPayload = {
             user_id: parseInt(userId),
-            day_of_week: day,         
-            start_time: startTime,  
-            end_time: endTime,  
+            day_of_week: day,
+            start_time: startTime,
+            end_time: endTime,
             status: slotStatus
           };
 
@@ -99,10 +101,10 @@ const ManageAvailability = () => {
       await Promise.all(promises);
       setInitialAvailability({ ...availability });
       setEditMode(false);
-      alert("Availability updated successfully!");
+      toast.success("Availability updated successfully!");
     } catch (err) {
       console.error("Error saving availability", err);
-      alert("Failed to save changes.");
+      toast.error("Failed to update availability. Please try again.");
     } finally {
       setIsSaving(false);
     }
@@ -118,15 +120,16 @@ const ManageAvailability = () => {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-semibold mb-4">Manage Availability</h2>
-      <div className="overflow-x-auto">
-        <table className="table-auto border border-gray-400">
-          <thead>
+    <div className="p-6 bg-white rounded-xl shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Manage Availability</h2>
+
+      <div className="overflow-x-auto rounded-md border border-gray-200">
+        <table className="min-w-full text-sm text-gray-700 text-center">
+          <thead className="bg-gray-100 text-gray-700 font-semibold">
             <tr>
-              <th className="border border-gray-400 px-2 py-1">Day / Time</th>
+              <th className="border border-gray-300 px-4 py-3">Day / Time</th>
               {hours.map(hour => (
-                <th key={hour} className="border border-gray-400 px-2 py-1">
+                <th key={hour} className="border border-gray-300 px-4 py-3">
                   {formatTime(hour)} - {formatTime(hour + 1)}
                 </th>
               ))}
@@ -136,8 +139,8 @@ const ManageAvailability = () => {
             {weekdays.map((dayName, i) => {
               const day = i + 1;
               return (
-                <tr key={day}>
-                  <td className="border border-gray-400 px-2 py-1 font-semibold">{dayName}</td>
+                <tr key={day} className="even:bg-gray-50">
+                  <td className="border border-gray-300 px-4 py-2 font-medium">{dayName}</td>
                   {hours.map(hour => {
                     const key = getSlotKey(day, hour);
                     const isAvailable = availability[key];
@@ -146,7 +149,10 @@ const ManageAvailability = () => {
                       <td
                         key={hour}
                         onClick={() => toggleSlot(day, hour)}
-                        className={`cursor-pointer border px-3 py-2 text-center ${slotStatus === 'available' ? 'bg-green-400' : 'bg-red-400'} ${editMode ? 'hover:opacity-80' : ''}`}
+                        className={`border px-4 py-2 transition-colors duration-200 ease-in-out ${slotStatus === 'available'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700'
+                          } ${editMode ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
                       >
                         {slotStatus === 'available' ? '✔️' : '❌'}
                       </td>
@@ -159,10 +165,10 @@ const ManageAvailability = () => {
         </table>
       </div>
 
-      <div className="mt-4 space-x-2">
+      <div className="mt-6 flex justify-center space-x-4">
         {!editMode ? (
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-700"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium shadow hover:bg-blue-700 transition"
             onClick={() => setEditMode(true)}
           >
             Change Availability
@@ -170,14 +176,14 @@ const ManageAvailability = () => {
         ) : (
           <>
             <button
-              className="bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50 cursor-pointer hover:bg-green-700"
+              className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium shadow hover:bg-green-700 transition disabled:opacity-50"
               onClick={handleSave}
               disabled={isSaving}
             >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
             <button
-              className="bg-gray-500 text-white px-4 py-2 rounded"
+              className="bg-gray-400 text-white px-6 py-2 rounded-lg font-medium shadow hover:bg-gray-500 transition"
               onClick={() => {
                 setAvailability({ ...initialAvailability });
                 setEditMode(false);
@@ -189,6 +195,8 @@ const ManageAvailability = () => {
           </>
         )}
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

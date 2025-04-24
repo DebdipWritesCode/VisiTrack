@@ -273,6 +273,26 @@ func (server *Server) updateUserRole(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
+type getUsersByNameRequest struct {
+	Query string `form:"query" binding:"required,min=1"`
+}
+
+func (server *Server) getUsersByName(ctx *gin.Context) {
+	var req getUsersByNameRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	users, err := server.store.GetUsersByName(ctx, sql.NullString{String: req.Query, Valid: req.Query != ""})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, users)
+}
+
 type deleteUserRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }

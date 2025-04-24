@@ -59,3 +59,8 @@ WHERE id = $1;
 SELECT appointments_visited
 FROM users
 WHERE id = $1;
+
+-- name: GetUsersByName :many
+SELECT * FROM users
+WHERE LOWER(first_name || ' ' || last_name) LIKE LOWER($1 || '%')
+ORDER BY created_at DESC;

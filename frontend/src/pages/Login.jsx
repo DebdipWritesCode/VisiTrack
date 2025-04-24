@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../utils/api";
 import { saveUserId } from "../utils/auth";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -13,10 +15,8 @@ const Login = () => {
       const res = await API.post("/auth/login", {
         phone_number: phoneNumber,
       });
-
-      console.log("Login response:", res.data);
-  
-      alert("Login successful!");
+      
+      toast.success("Login successful!");
       saveUserId(res.data.id);
   
       if (res.data.role.String === "admin") {
@@ -26,7 +26,11 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert(error.response?.data?.error || "Login failed");
+      if (error.response && error.response.status === 401) {
+        toast.error("Invalid phone number or password. Please try again.");
+      } else {
+        toast.error("An error occurred. Please try again later.");
+      }
     }
   };
 
@@ -61,6 +65,8 @@ const Login = () => {
           </Link>
         </p>
       </div>
+
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

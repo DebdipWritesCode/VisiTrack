@@ -195,6 +195,30 @@ func (server *Server) updateAppointmentStatus(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, appointment)
 }
 
+type getUserAppointmentStatsRequest struct {
+	ID int64 `uri:"id" binding:"required,min=1"`
+}
+
+func (server *Server) getUserAppointmentStats(ctx *gin.Context) {
+	var req getUserAppointmentStatsRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	stats, err := server.store.GetUserAppointmentStats(ctx, int32(req.ID))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(fmt.Errorf("no user found with this ID")))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, stats)
+}
+
 func (server *Server) cancelAppointment(ctx *gin.Context) {
 	var req getAppointmentUriRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
