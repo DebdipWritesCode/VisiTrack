@@ -1,4 +1,4 @@
-# Visitor Management System 🚪
+# VisiTrack – Intelligent Visitor Management System 🚪
 
 A full-stack Visitor Management System designed for offices or gated venues to streamline the appointment process between visitors and hosts. This project features OTP-based login, smart availability booking, QR code-based check-in/check-out, and an intuitive admin panel for security personnel.
 
