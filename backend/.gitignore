@@ -7,9 +7,9 @@
 *.out
 *.log
 
-# Go modules
-/go.sum
-/go.mod
+# # Go modules
+# /go.sum
+# /go.mod
 
 # SQLC generated files (optional, if you want to ignore these)
 /db/sqlc/
