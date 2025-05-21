@@ -20,17 +20,23 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::767397913215:role/github-ci-vst  # <-- Replace with your role ARN
-          aws-region: ap-south-1  # <-- Replace with your AWS region
+          role-to-assume: arn:aws:iam::767397913215:role/github-ci-vst
+          aws-region: ap-south-1
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Recreate app.env file
+        run: |
+          echo "$APP_ENV_CONTENT" > backend/app.env
+        env:
+          APP_ENV_CONTENT: ${{ secrets.APP_ENV_CONTENT }}
+
       - name: Build, tag, and push docker image to Amazon ECR
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: visitrack  # <-- Replace with your ECR repository name
+          REPOSITORY: visitrack
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f backend/Dockerfile backend/
