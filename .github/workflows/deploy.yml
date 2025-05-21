@@ -33,5 +33,5 @@ jobs:
           REPOSITORY: visitrack  # <-- Replace with your ECR repository name
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f backend/Dockerfile backend/
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
