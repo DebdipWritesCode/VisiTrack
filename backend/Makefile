@@ -14,7 +14,7 @@ generate:
 # Run all migrations (up)
 .PHONY: migrateup
 migrateup:
-	migrate -path ./db/migration -database "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)" -verbose up
+	migrate -path ./db/migration -database "postgresql://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):5432/$(DB_NAME)?sslmode=$(DB_SSLMODE)" -verbose up
 
 # Rollback all migrations (down)
 .PHONY: migratedown
