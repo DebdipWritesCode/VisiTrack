@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/DebdipWritesCode/VisitorManagementSystem/pb";
+
+message User {
+  int64 id = 1;
+  string phone_number = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string role = 5;
+  google.protobuf.Timestamp created_at = 6;
+  int32 appointments_booked = 7;
+  int32 appointments_hosted = 8;
+}

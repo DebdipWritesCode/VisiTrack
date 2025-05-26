@@ -6,11 +6,14 @@ toolchain go1.24.2
 
 require (
 	github.com/gin-gonic/gin v1.10.0
+	github.com/golang/protobuf v1.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/rs/cors v1.11.1
 	github.com/spf13/viper v1.20.1
 	github.com/twilio/twilio-go v1.25.1
+	google.golang.org/grpc v1.67.3
+	google.golang.org/protobuf v1.36.6
 )
 
 require (
@@ -52,6 +55,6 @@ require (
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
-	google.golang.org/protobuf v1.36.6 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20241223144023-3abc09e42ca8 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

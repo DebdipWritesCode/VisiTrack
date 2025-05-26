@@ -11,6 +11,14 @@ all: generate migrateup run
 generate:
 	sqlc generate
 
+# Generate Protobuf files
+.PHONY: proto
+proto:
+	rm -f pb/*.go
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+    --go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+    proto/*.proto
+
 # Run all migrations (up)
 .PHONY: migrateup
 migrateup:
@@ -21,10 +29,15 @@ migrateup:
 migratedown:
 	migrate -path db/migration -database "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSLMODE)" -verbose down
 
-# Run the Go server with Gin
+# Run the Go server
 .PHONY: run
 run:
 	go run main.go
+
+# Run Evans gRPC client
+.PHONY: evans
+evans:
+	evans --proto service_visitrack.proto --path proto --host localhost --port 9000
 
 # Install dependencies
 .PHONY: install
