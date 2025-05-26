@@ -6,10 +6,16 @@ import "user.proto";
 
 option go_package = "github.com/DebdipWritesCode/VisitorManagementSystem/pb";
 
+message Metadata {
+  string user_agent = 1;
+  string client_ip = 2;
+}
+
 message LoginUserRequest {
   string phone_number = 1;
 }
 
 message LoginUserResponse {
   User user = 1;
+  Metadata metadata = 2;
 }

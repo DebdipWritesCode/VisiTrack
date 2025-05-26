@@ -23,3 +23,13 @@ func convertUserToProto(user db.User) *pb.User {
 		AppointmentsHosted: int32(user.AppointmentsHosted.Int32),
 	}
 }
+
+func convertMetadataToProto(m *Metadata) *pb.Metadata {
+	if m == nil {
+		return nil
+	}
+	return &pb.Metadata{
+		UserAgent: m.UserAgent,
+		ClientIp:  m.ClientIP,
+	}
+}

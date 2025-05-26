@@ -18,8 +18,10 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 		return nil, status.Errorf(codes.Internal, "Failed to retrieve user: %s", err.Error())
 	}
 
+	mtdt := server.extractMetadata(ctx)
 	rsq := &pb.LoginUserResponse{
-		User: convertUserToProto(user),
+		User:     convertUserToProto(user),
+		Metadata: convertMetadataToProto(mtdt),
 	}
 
 	return rsq, nil
