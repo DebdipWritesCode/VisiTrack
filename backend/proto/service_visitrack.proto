@@ -12,7 +12,7 @@ option go_package = "github.com/DebdipWritesCode/VisitorManagementSystem/pb";
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     title: "VisiTrack API";
-    version: "1.0.0";
+    version: "1.1.0";
     description: "API for managing a Visitor Management System.";
     contact: {
       name: "Debdip Mukherjee";
@@ -28,11 +28,23 @@ service VisiTrack {
       post: "/v1/create_user"
       body: "*"
     };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "User Management";
+      summary: "Create a new user";
+      description: "This endpoint allows the creation of a new user in the system.";
+    };
   };
   rpc LoginUser(LoginUserRequest) returns (LoginUserResponse) {
     option (google.api.http) = {
       post: "/v1/login_user"
       body: "*"
+    };
+
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "User Management";
+      summary: "Login a user";
+      description: "This endpoint allows a user to log in to the system.";
     };
   };
 }

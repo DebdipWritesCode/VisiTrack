@@ -3,7 +3,7 @@
   "info": {
     "title": "VisiTrack API",
     "description": "API for managing a Visitor Management System.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "contact": {
       "name": "Debdip Mukherjee",
       "url": "https://github.com/DebdipWritesCode",
@@ -24,6 +24,8 @@
   "paths": {
     "/v1/create_user": {
       "post": {
+        "summary": "Create a new user",
+        "description": "This endpoint allows the creation of a new user in the system.",
         "operationId": "VisiTrack_CreateUser",
         "responses": {
           "200": {
@@ -50,12 +52,14 @@
           }
         ],
         "tags": [
-          "VisiTrack"
+          "User Management"
         ]
       }
     },
     "/v1/login_user": {
       "post": {
+        "summary": "Login a user",
+        "description": "This endpoint allows a user to log in to the system.",
         "operationId": "VisiTrack_LoginUser",
         "responses": {
           "200": {
@@ -82,7 +86,7 @@
           }
         ],
         "tags": [
-          "VisiTrack"
+          "User Management"
         ]
       }
     }

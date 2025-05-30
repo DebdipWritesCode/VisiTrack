@@ -21,9 +21,9 @@ LIMIT $1 OFFSET $2;
 
 -- name: UpdateUserName :one
 UPDATE users
-SET first_name = $2,
-    last_name = $3
-WHERE id = $1
+SET first_name = COALESCE(sqlc.narg(first_name), first_name),
+    last_name = COALESCE(sqlc.narg(last_name), last_name)
+WHERE id = sqlc.arg(id)
 RETURNING *;
 
 -- name: UpdateUserRole :one

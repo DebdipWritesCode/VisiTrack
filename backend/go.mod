@@ -10,6 +10,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
+	github.com/rakyll/statik v0.1.7
 	github.com/rs/cors v1.11.1
 	github.com/spf13/viper v1.20.1
 	github.com/twilio/twilio-go v1.25.1

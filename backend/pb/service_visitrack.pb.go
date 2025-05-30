@@ -26,13 +26,15 @@ var File_service_visitrack_proto protoreflect.FileDescriptor
 
 const file_service_visitrack_proto_rawDesc = "" +
 	"\n" +
-	"\x17service_visitrack.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x14rpc_login_user.proto\x1a.protoc-gen-openapiv2/options/annotations.proto2\xb9\x01\n" +
-	"\tVisiTrack\x12W\n" +
+	"\x17service_visitrack.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x14rpc_login_user.proto\x1a.protoc-gen-openapiv2/options/annotations.proto2\xfb\x02\n" +
+	"\tVisiTrack\x12\xbf\x01\n" +
 	"\n" +
-	"CreateUser\x12\x15.pb.CreateUserRequest\x1a\x16.pb.CreateUserResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/create_user\x12S\n" +
-	"\tLoginUser\x12\x14.pb.LoginUserRequest\x1a\x15.pb.LoginUserResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/login_userB\xda\x01\x92A\x9e\x01\x12\x9b\x01\n" +
+	"CreateUser\x12\x15.pb.CreateUserRequest\x1a\x16.pb.CreateUserResponse\"\x81\x01\x92Ad\n" +
+	"\x0fUser Management\x12\x11Create a new user\x1a>This endpoint allows the creation of a new user in the system.\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/create_user\x12\xab\x01\n" +
+	"\tLoginUser\x12\x14.pb.LoginUserRequest\x1a\x15.pb.LoginUserResponse\"q\x92AU\n" +
+	"\x0fUser Management\x12\fLogin a user\x1a4This endpoint allows a user to log in to the system.\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/login_userB\xda\x01\x92A\x9e\x01\x12\x9b\x01\n" +
 	"\rVisiTrack API\x12-API for managing a Visitor Management System.\"T\n" +
-	"\x10Debdip Mukherjee\x12#https://github.com/DebdipWritesCode\x1a\x1bdebdipmukherjee52@gmail.com2\x051.0.0Z6github.com/DebdipWritesCode/VisitorManagementSystem/pbb\x06proto3"
+	"\x10Debdip Mukherjee\x12#https://github.com/DebdipWritesCode\x1a\x1bdebdipmukherjee52@gmail.com2\x051.1.0Z6github.com/DebdipWritesCode/VisitorManagementSystem/pbb\x06proto3"
 
 var file_service_visitrack_proto_goTypes = []any{
 	(*CreateUserRequest)(nil),  // 0: pb.CreateUserRequest

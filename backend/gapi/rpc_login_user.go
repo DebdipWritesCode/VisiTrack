@@ -5,11 +5,18 @@ import (
 	"database/sql"
 
 	"github.com/DebdipWritesCode/VisitorManagementSystem/pb"
+	"github.com/DebdipWritesCode/VisitorManagementSystem/val"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
+	violations := validateLoginUserRequest(req)
+	if len(violations) > 0 {
+		return nil, invalidArgumentError(violations)
+	}
+
 	user, err := server.store.GetUserByPhone(ctx, req.GetPhoneNumber())
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -25,4 +32,12 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 	}
 
 	return rsq, nil
+}
+
+func validateLoginUserRequest(req *pb.LoginUserRequest) (violations []*errdetails.BadRequest_FieldViolation) {
+	if err := val.ValidatePhoneNumber(req.GetPhoneNumber()); err != nil {
+		violations = append(violations, fieldViolation("phone_number", err))
+	}
+
+	return violations
 }
