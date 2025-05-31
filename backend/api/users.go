@@ -225,9 +225,15 @@ func (server *Server) updateUserName(ctx *gin.Context) {
 	}
 
 	arg := db.UpdateUserNameParams{
-		ID:        int32(req.ID),
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
+		ID: int32(req.ID),
+		FirstName: sql.NullString{
+			String: req.FirstName,
+			Valid:  req.FirstName != "",
+		},
+		LastName: sql.NullString{
+			String: req.LastName,
+			Valid:  req.LastName != "",
+		},
 	}
 
 	user, err := server.store.UpdateUserName(ctx, arg)

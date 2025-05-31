@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	"database/sql"
-	"log"
 	"net"
 	"net/http"
+	"os"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rakyll/statik/fs"
@@ -27,13 +30,17 @@ func main() {
 	// Load config
 	config, err := util.LoadConfig(".")
 	if err != nil {
-		log.Fatal("cannot load config:", err)
+		log.Fatal().Err(err).Msg("cannot load config:")
+	}
+
+	if config.Environment == "development" {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 
 	// Connect to the database
 	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
-		log.Fatal("cannot connect to database:", err)
+		log.Fatal().Err(err).Msg("cannot connect to database:")
 	}
 
 	// Create the store and server
@@ -45,29 +52,30 @@ func main() {
 func runGrpcServer(store db.Store, config util.Config) {
 	server, err := gapi.NewServer(config, store)
 	if err != nil {
-		log.Fatal("cannot create gRPC server:", err)
+		log.Fatal().Err(err).Msg("cannot create gRPC server:")
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcLogger := grpc.UnaryInterceptor(gapi.GrpcLogger)
+	grpcServer := grpc.NewServer(grpcLogger) // This creates a new gRPC server with the logger interceptor. The logger interceptor is used to log incoming requests and outgoing responses.
 	pb.RegisterVisiTrackServer(grpcServer, server)
 	reflection.Register(grpcServer) // This command registers the server for reflection; Reflection allows clients to discover the services and methods available on the server.
 
 	listener, err := net.Listen("tcp", config.GRPCServerAddress)
 	if err != nil {
-		log.Fatal("cannot create listener:", err)
+		log.Fatal().Err(err).Msg("cannot create listener:")
 	}
 
-	log.Printf("Starting GRPC server on %s...\n", listener.Addr().String())
+	log.Info().Msgf("Starting GRPC server on %s...\n", listener.Addr().String())
 	err = grpcServer.Serve(listener)
 	if err != nil {
-		log.Fatal("cannot start gRPC server:", err)
+		log.Fatal().Err(err).Msg("cannot start gRPC server:")
 	}
 }
 
 func runGatewayServer(store db.Store, config util.Config) {
 	server, err := gapi.NewServer(config, store)
 	if err != nil {
-		log.Fatal("cannot create gRPC server:", err)
+		log.Fatal().Err(err).Msg("cannot create gRPC server:")
 	}
 
 	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
@@ -87,7 +95,7 @@ func runGatewayServer(store db.Store, config util.Config) {
 
 	err = pb.RegisterVisiTrackHandlerServer(ctx, grpcMux, server)
 	if err != nil {
-		log.Fatal("cannot register gRPC handler:", err)
+		log.Fatal().Err(err).Msg("cannot register gRPC handler:")
 	}
 
 	mux := http.NewServeMux()
@@ -95,7 +103,7 @@ func runGatewayServer(store db.Store, config util.Config) {
 
 	statisFs, err := fs.New()
 	if err != nil {
-		log.Fatal("cannot create statik filesystem:", err)
+		log.Fatal().Err(err).Msg("cannot create statik filesystem:")
 	}
 
 	swaggerHandler := http.StripPrefix("/swagger/", http.FileServer(statisFs))
@@ -103,20 +111,22 @@ func runGatewayServer(store db.Store, config util.Config) {
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
 	if err != nil {
-		log.Fatal("cannot create listener:", err)
+		log.Fatal().Err(err).Msg("cannot create listener:")
 	}
 
-	log.Printf("Starting HTTP Gateway server on %s...\n", listener.Addr().String())
-	err = http.Serve(listener, mux)
+	log.Info().Msgf("Starting HTTP Gateway server on %s...\n", listener.Addr().String())
+	handler := gapi.HttpLogger(mux) // This wraps the HTTP handler with the logger middleware to log incoming requests and outgoing responses.
+
+	err = http.Serve(listener, handler)
 	if err != nil {
-		log.Fatal("cannot start HTTP Gateway server:", err)
+		log.Fatal().Err(err).Msg("cannot start HTTP Gateway server:")
 	}
 }
 
 func runGinServer(store db.Store, config util.Config) {
 	server, err := api.NewServer(config, store)
 	if err != nil {
-		log.Fatal("cannot create server:", err)
+		log.Fatal().Err(err).Msg("cannot create server:")
 	}
 
 	// CORS middleware
@@ -138,6 +148,6 @@ func runGinServer(store db.Store, config util.Config) {
 	// Start the HTTP server
 	err = http.ListenAndServe(config.HTTPServerAddress, handler)
 	if err != nil {
-		log.Fatal("cannot start server:", err)
+		log.Fatal().Err(err).Msg("cannot start server:")
 	}
 }

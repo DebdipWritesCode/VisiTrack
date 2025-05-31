@@ -26,29 +26,35 @@ var File_service_visitrack_proto protoreflect.FileDescriptor
 
 const file_service_visitrack_proto_rawDesc = "" +
 	"\n" +
-	"\x17service_visitrack.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x14rpc_login_user.proto\x1a.protoc-gen-openapiv2/options/annotations.proto2\xfb\x02\n" +
+	"\x17service_visitrack.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x1arpc_update_user_name.proto\x1a\x14rpc_login_user.proto\x1a.protoc-gen-openapiv2/options/annotations.proto2\xca\x04\n" +
 	"\tVisiTrack\x12\xbf\x01\n" +
 	"\n" +
 	"CreateUser\x12\x15.pb.CreateUserRequest\x1a\x16.pb.CreateUserResponse\"\x81\x01\x92Ad\n" +
-	"\x0fUser Management\x12\x11Create a new user\x1a>This endpoint allows the creation of a new user in the system.\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/create_user\x12\xab\x01\n" +
+	"\x0fUser Management\x12\x11Create a new user\x1a>This endpoint allows the creation of a new user in the system.\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/create_user\x12\xcc\x01\n" +
+	"\x0eUpdateUserName\x12\x19.pb.UpdateUserNameRequest\x1a\x1a.pb.UpdateUserNameResponse\"\x82\x01\x92A`\n" +
+	"\x0fUser Management\x12\x10Update user name\x1a;This endpoint allows updating the name of an existing user.\x82\xd3\xe4\x93\x02\x19:\x01*2\x14/v1/update_user_name\x12\xab\x01\n" +
 	"\tLoginUser\x12\x14.pb.LoginUserRequest\x1a\x15.pb.LoginUserResponse\"q\x92AU\n" +
 	"\x0fUser Management\x12\fLogin a user\x1a4This endpoint allows a user to log in to the system.\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/login_userB\xda\x01\x92A\x9e\x01\x12\x9b\x01\n" +
 	"\rVisiTrack API\x12-API for managing a Visitor Management System.\"T\n" +
-	"\x10Debdip Mukherjee\x12#https://github.com/DebdipWritesCode\x1a\x1bdebdipmukherjee52@gmail.com2\x051.1.0Z6github.com/DebdipWritesCode/VisitorManagementSystem/pbb\x06proto3"
+	"\x10Debdip Mukherjee\x12#https://github.com/DebdipWritesCode\x1a\x1bdebdipmukherjee52@gmail.com2\x051.2.0Z6github.com/DebdipWritesCode/VisitorManagementSystem/pbb\x06proto3"
 
 var file_service_visitrack_proto_goTypes = []any{
-	(*CreateUserRequest)(nil),  // 0: pb.CreateUserRequest
-	(*LoginUserRequest)(nil),   // 1: pb.LoginUserRequest
-	(*CreateUserResponse)(nil), // 2: pb.CreateUserResponse
-	(*LoginUserResponse)(nil),  // 3: pb.LoginUserResponse
+	(*CreateUserRequest)(nil),      // 0: pb.CreateUserRequest
+	(*UpdateUserNameRequest)(nil),  // 1: pb.UpdateUserNameRequest
+	(*LoginUserRequest)(nil),       // 2: pb.LoginUserRequest
+	(*CreateUserResponse)(nil),     // 3: pb.CreateUserResponse
+	(*UpdateUserNameResponse)(nil), // 4: pb.UpdateUserNameResponse
+	(*LoginUserResponse)(nil),      // 5: pb.LoginUserResponse
 }
 var file_service_visitrack_proto_depIdxs = []int32{
 	0, // 0: pb.VisiTrack.CreateUser:input_type -> pb.CreateUserRequest
-	1, // 1: pb.VisiTrack.LoginUser:input_type -> pb.LoginUserRequest
-	2, // 2: pb.VisiTrack.CreateUser:output_type -> pb.CreateUserResponse
-	3, // 3: pb.VisiTrack.LoginUser:output_type -> pb.LoginUserResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	1, // 1: pb.VisiTrack.UpdateUserName:input_type -> pb.UpdateUserNameRequest
+	2, // 2: pb.VisiTrack.LoginUser:input_type -> pb.LoginUserRequest
+	3, // 3: pb.VisiTrack.CreateUser:output_type -> pb.CreateUserResponse
+	4, // 4: pb.VisiTrack.UpdateUserName:output_type -> pb.UpdateUserNameResponse
+	5, // 5: pb.VisiTrack.LoginUser:output_type -> pb.LoginUserResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -60,6 +66,7 @@ func file_service_visitrack_proto_init() {
 		return
 	}
 	file_rpc_create_user_proto_init()
+	file_rpc_update_user_name_proto_init()
 	file_rpc_login_user_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{

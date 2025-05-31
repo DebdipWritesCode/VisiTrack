@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	VisiTrack_CreateUser_FullMethodName = "/pb.VisiTrack/CreateUser"
-	VisiTrack_LoginUser_FullMethodName  = "/pb.VisiTrack/LoginUser"
+	VisiTrack_CreateUser_FullMethodName     = "/pb.VisiTrack/CreateUser"
+	VisiTrack_UpdateUserName_FullMethodName = "/pb.VisiTrack/UpdateUserName"
+	VisiTrack_LoginUser_FullMethodName      = "/pb.VisiTrack/LoginUser"
 )
 
 // VisiTrackClient is the client API for VisiTrack service.
@@ -28,6 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type VisiTrackClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	UpdateUserName(ctx context.Context, in *UpdateUserNameRequest, opts ...grpc.CallOption) (*UpdateUserNameResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
 }
 
@@ -49,6 +51,16 @@ func (c *visiTrackClient) CreateUser(ctx context.Context, in *CreateUserRequest,
 	return out, nil
 }
 
+func (c *visiTrackClient) UpdateUserName(ctx context.Context, in *UpdateUserNameRequest, opts ...grpc.CallOption) (*UpdateUserNameResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateUserNameResponse)
+	err := c.cc.Invoke(ctx, VisiTrack_UpdateUserName_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *visiTrackClient) LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginUserResponse)
@@ -64,6 +76,7 @@ func (c *visiTrackClient) LoginUser(ctx context.Context, in *LoginUserRequest, o
 // for forward compatibility.
 type VisiTrackServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	UpdateUserName(context.Context, *UpdateUserNameRequest) (*UpdateUserNameResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
 	mustEmbedUnimplementedVisiTrackServer()
 }
@@ -77,6 +90,9 @@ type UnimplementedVisiTrackServer struct{}
 
 func (UnimplementedVisiTrackServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedVisiTrackServer) UpdateUserName(context.Context, *UpdateUserNameRequest) (*UpdateUserNameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserName not implemented")
 }
 func (UnimplementedVisiTrackServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
@@ -120,6 +136,24 @@ func _VisiTrack_CreateUser_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VisiTrack_UpdateUserName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserNameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VisiTrackServer).UpdateUserName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: VisiTrack_UpdateUserName_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VisiTrackServer).UpdateUserName(ctx, req.(*UpdateUserNameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _VisiTrack_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginUserRequest)
 	if err := dec(in); err != nil {
@@ -148,6 +182,10 @@ var VisiTrack_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUser",
 			Handler:    _VisiTrack_CreateUser_Handler,
+		},
+		{
+			MethodName: "UpdateUserName",
+			Handler:    _VisiTrack_UpdateUserName_Handler,
 		},
 		{
 			MethodName: "LoginUser",

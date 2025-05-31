@@ -3,7 +3,7 @@
   "info": {
     "title": "VisiTrack API",
     "description": "API for managing a Visitor Management System.",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "contact": {
       "name": "Debdip Mukherjee",
       "url": "https://github.com/DebdipWritesCode",
@@ -89,6 +89,40 @@
           "User Management"
         ]
       }
+    },
+    "/v1/update_user_name": {
+      "patch": {
+        "summary": "Update user name",
+        "description": "This endpoint allows updating the name of an existing user.",
+        "operationId": "VisiTrack_UpdateUserName",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbUpdateUserNameResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbUpdateUserNameRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User Management"
+        ]
+      }
     }
   },
   "definitions": {
@@ -144,6 +178,29 @@
         },
         "clientIp": {
           "type": "string"
+        }
+      }
+    },
+    "pbUpdateUserNameRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        }
+      }
+    },
+    "pbUpdateUserNameResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/pbUser"
         }
       }
     },

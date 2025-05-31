@@ -60,3 +60,10 @@ func ValidateRole(role string) error {
 	}
 	return nil
 }
+
+func ValidateID(id int64) error {
+	if id <= 0 {
+		return fmt.Errorf("ID must be a positive integer, got %d", id)
+	}
+	return nil
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+
+import "user.proto";
+
+option go_package = "github.com/DebdipWritesCode/VisitorManagementSystem/pb";
+
+message UpdateUserNameRequest {
+  int32 user_id = 1;
+  optional string first_name = 2;
+  optional string last_name = 3;
+}
+
+message UpdateUserNameResponse {
+  User user = 1;
+}
