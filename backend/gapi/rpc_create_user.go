@@ -3,10 +3,14 @@ package gapi
 import (
 	"context"
 	"database/sql"
+	"strconv"
+	"time"
 
 	db "github.com/DebdipWritesCode/VisitorManagementSystem/db/sqlc"
 	"github.com/DebdipWritesCode/VisitorManagementSystem/pb"
 	"github.com/DebdipWritesCode/VisitorManagementSystem/val"
+	"github.com/DebdipWritesCode/VisitorManagementSystem/worker"
+	"github.com/hibiken/asynq"
 	"github.com/lib/pq"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -19,14 +23,30 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 		return nil, invalidArgumentError(violations)
 	}
 
-	arg := db.CreateUserParams{
-		PhoneNumber: req.GetPhoneNumber(),
-		FirstName:   req.GetFirstName(),
-		LastName:    req.GetLastName(),
-		Role:        sql.NullString{String: req.Role, Valid: req.Role != ""},
+	arg := db.CreateUserTxParams{
+		CreateUserParams: db.CreateUserParams{
+			PhoneNumber: req.GetPhoneNumber(),
+			FirstName:   req.GetFirstName(),
+			LastName:    req.GetLastName(),
+			Role:        sql.NullString{String: req.Role, Valid: req.Role != ""},
+		},
+		AfterCreate: func(user db.User) error {
+			// TODO: Use db transaction to ensure that we can rollback if the task distribution fails.
+			taskPayload := &worker.PayloadSendVerifyEmail{
+				UserID: strconv.Itoa(int(user.ID)),
+			}
+
+			opts := []asynq.Option{
+				asynq.MaxRetry(10),
+				asynq.ProcessIn(10 * time.Second),
+				asynq.Queue(worker.QueueCritical), // Use a critical queue for important tasks
+			}
+
+			return server.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
+		},
 	}
 
-	user, err := server.store.CreateUser(ctx, arg)
+	txResult, err := server.store.CreateUserTx(ctx, arg)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code.Name() == "unique_violation" {
 			return nil, status.Errorf(codes.AlreadyExists, "User with phone number %s already exists %s", req.GetPhoneNumber(), err.Error())
@@ -35,7 +55,7 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 	}
 
 	rsp := &pb.CreateUserResponse{
-		User: convertUserToProto(user),
+		User: convertUserToProto(txResult.User),
 	}
 
 	return rsp, nil

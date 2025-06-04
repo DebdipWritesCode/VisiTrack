@@ -15,6 +15,7 @@ type Config struct {
 	GRPCServerAddress   string        `mapstructure:"GRPC_SERVER_ADDRESS"`
 	TokenSymmetricKey   string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	RedisAddress        string        `mapstructure:"REDIS_ADDRESS"`
 }
 
 // LoadConfig loads env variables from file or environment

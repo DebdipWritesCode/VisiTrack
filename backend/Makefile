@@ -44,6 +44,11 @@ run:
 evans:
 	evans --proto service_visitrack.proto --path proto --host localhost --port 9000
 
+# Run Redis server
+.PHONY: redis
+redis:
+	docker run --name visitrack-redis -p 6379:6379 -d redis:latest
+
 # Install dependencies
 .PHONY: install
 install:

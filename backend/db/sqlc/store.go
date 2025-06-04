@@ -10,6 +10,7 @@ type Store interface {
 	Querier // Embeds all generated SQLC methods
 	// Add transactional methods here, like:
 	// BookAppointmentTx(ctx context.Context, arg BookAppointmentTxParams) (BookAppointmentTxResult, error)
+	CreateUserTx(ctx context.Context, arg CreateUserTxParams) (CreateUserTxResult, error)
 }
 
 type SQLStore struct {
