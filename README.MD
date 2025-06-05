@@ -50,8 +50,8 @@ A full-stack Visitor Management System designed for offices or gated venues to s
 ### 🛡️ Admin Flow (Security Guards)
 - View all appointments for any day.
 - Scan QR codes:
-  - First scan sets appointment as **"ongoing"**.
-  - Second scan sets appointment as **"completed"**.
+  - First scan sets appointment as **"Ongoing"**.
+  - Second scan sets appointment as **"Completed"**.
 - See live status updates for visits.
 
 ---
